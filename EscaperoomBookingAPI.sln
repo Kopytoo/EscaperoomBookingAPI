@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EscaperoomBookingAPI.Presentation.Web.Api", "EscaperoomBookingAPI.Presentation.Web.Api\EscaperoomBookingAPI.Presentation.Web.Api.csproj", "{C9CB08A2-9373-4790-BDC4-A5E35B9C1D73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{50DF1592-1A57-4114-AC4F-1DA4007C70DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{0EDB8B83-0102-4F76-9F01-1BAFCA2543B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{E27FCCC5-9E32-4639-97D3-08F668C9BCDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EscaperoomBookingAPI.Core.Domain", "EscaperoomBookingAPI.Core.Domain\EscaperoomBookingAPI.Core.Domain.csproj", "{8D03C0F7-CCE2-4200-AD93-A8860E6BE8EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EscaperoomBookingAPI.Core.Application", "EscaperoomBookingAPI.Core.Application\EscaperoomBookingAPI.Core.Application.csproj", "{3C70CA00-7336-4182-B87A-B847A95E247A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EscaperoomBookingAPI.Infrastructure", "EscaperoomBookingAPI.Infrastructure\EscaperoomBookingAPI.Infrastructure.csproj", "{F0B0ECDA-C46C-47E2-8F22-CDF54C8BC0B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C9CB08A2-9373-4790-BDC4-A5E35B9C1D73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9CB08A2-9373-4790-BDC4-A5E35B9C1D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9CB08A2-9373-4790-BDC4-A5E35B9C1D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9CB08A2-9373-4790-BDC4-A5E35B9C1D73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D03C0F7-CCE2-4200-AD93-A8860E6BE8EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D03C0F7-CCE2-4200-AD93-A8860E6BE8EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D03C0F7-CCE2-4200-AD93-A8860E6BE8EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D03C0F7-CCE2-4200-AD93-A8860E6BE8EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C70CA00-7336-4182-B87A-B847A95E247A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C70CA00-7336-4182-B87A-B847A95E247A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C70CA00-7336-4182-B87A-B847A95E247A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C70CA00-7336-4182-B87A-B847A95E247A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0B0ECDA-C46C-47E2-8F22-CDF54C8BC0B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0B0ECDA-C46C-47E2-8F22-CDF54C8BC0B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0B0ECDA-C46C-47E2-8F22-CDF54C8BC0B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0B0ECDA-C46C-47E2-8F22-CDF54C8BC0B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C9CB08A2-9373-4790-BDC4-A5E35B9C1D73} = {50DF1592-1A57-4114-AC4F-1DA4007C70DC}
+		{8D03C0F7-CCE2-4200-AD93-A8860E6BE8EB} = {0EDB8B83-0102-4F76-9F01-1BAFCA2543B8}
+		{3C70CA00-7336-4182-B87A-B847A95E247A} = {0EDB8B83-0102-4F76-9F01-1BAFCA2543B8}
+		{F0B0ECDA-C46C-47E2-8F22-CDF54C8BC0B4} = {E27FCCC5-9E32-4639-97D3-08F668C9BCDD}
+	EndGlobalSection
+EndGlobal
