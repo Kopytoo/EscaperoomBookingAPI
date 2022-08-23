@@ -7,8 +7,8 @@ public class Summary : BaseEntity<Guid>
 {
     public BookingStatus Status { get; set; }
     public DateTime CreationDate { get; set; }
+    public Variant BookingVariant { get; set; }
+    public int Price { get; set; }
     public CustomerDetails CustomerDetails { get; set; }
-    public Guid CustomerId { get; set; }
     public BookingDetails BookingDetails { get; set; }
-    public Guid BookingId { get; set; }
 }

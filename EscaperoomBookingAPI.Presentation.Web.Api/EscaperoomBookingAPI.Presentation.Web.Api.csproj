@@ -11,7 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers" />
+      <ProjectReference Include="..\EscaperoomBookingAPI.Core.Application\EscaperoomBookingAPI.Core.Application.csproj" />
+      <ProjectReference Include="..\EscaperoomBookingAPI.Infrastructure\EscaperoomBookingAPI.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

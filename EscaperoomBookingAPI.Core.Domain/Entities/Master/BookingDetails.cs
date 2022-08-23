@@ -7,7 +7,5 @@ public class BookingDetails : BaseEntity<Guid>
 {
     public Room SelectedRoom { get; set; }
     public DateTime VisitDate { get; set; }
-    public Variant BookingVariant { get; set; }
     public int NumberOfPeople { get; set; }
-    public int Price { get; set; }
 }
