@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EscaperoomBookingAPI.Presentation.Web.Api.Controllers;
 
+[Route("api/[controller]/[action]")]
+[ApiController]
 public class BookingDetailsController : Controller
 {
     private readonly ILogger<BookingDetailsController> _logger;
