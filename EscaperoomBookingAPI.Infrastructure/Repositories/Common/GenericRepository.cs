@@ -7,8 +7,8 @@ namespace EscaperoomBookingAPI.Infrastructure.Repositories.Common;
 
 public class GenericRepository<T, U> : IGenericRepository<T, U> where T : class
 {
-    private readonly ApplicationDbContext _context;
-    private readonly DbSet<T> _dbSet;
+    internal readonly ApplicationDbContext _context;
+    internal readonly DbSet<T> _dbSet;
     private readonly ILogger _logger;
 
     public GenericRepository(ApplicationDbContext context, ILogger logger)
@@ -18,17 +18,17 @@ public class GenericRepository<T, U> : IGenericRepository<T, U> where T : class
         _logger = logger;
     }
 
-    public virtual async Task<IEnumerable<T>> GetAll()
+    public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
         return await _dbSet.ToListAsync();
     }
 
-    public virtual async Task<T> GetById(U id)
+    public virtual async Task<T> GetByIdAsync(U id)
     {
         return await _dbSet.FindAsync(id);
     }
 
-    public virtual async Task<bool> Add(T entity)
+    public virtual async Task<bool> AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
         return true;
