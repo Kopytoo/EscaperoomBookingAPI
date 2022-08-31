@@ -25,11 +25,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         
         modelBuilder.Entity<Summary>()
             .HasOne(s => s.BookingDetails)
-            .WithOne()
+            .WithOne(b => b.Summary)
+            .HasForeignKey<BookingDetails>(b => b.SummaryReference)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Summary>()
             .HasOne(s => s.CustomerDetails)
-            .WithOne()
+            .WithOne(c => c.Summary)
+            .HasForeignKey<CustomerDetails>(c => c.SummaryReference)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

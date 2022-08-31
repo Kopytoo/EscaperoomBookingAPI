@@ -9,6 +9,6 @@ public class Summary : BaseEntity<Guid>
     public DateTime CreationDate { get; set; }
     public Variant BookingVariant { get; set; }
     public int Price { get; set; }
-    public CustomerDetails CustomerDetails { get; set; }
-    public BookingDetails BookingDetails { get; set; }
+    public CustomerDetails? CustomerDetails { get; set; }
+    public BookingDetails? BookingDetails { get; set; }
 }

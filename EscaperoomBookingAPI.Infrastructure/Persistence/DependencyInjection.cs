@@ -1,7 +1,5 @@
 using EscaperoomBookingAPI.Core.Application.Context.Interface;
-using EscaperoomBookingAPI.Core.Application.Services;
 using EscaperoomBookingAPI.Core.Application.UoW.Interface;
-using EscaperoomBookingAPI.Core.Domain.Services.Interfaces;
 using EscaperoomBookingAPI.Infrastructure.Persistence.Context;
 using EscaperoomBookingAPI.Infrastructure.UoW;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +20,6 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         //services.AddScoped<ISummaryService, SummaryService>();
         //services.AddScoped<ICustomerDetailsService, CustomerDetailsService>();
-        services.AddScoped<IBookingDetailsService, BookingDetailsService>();
 
         return services;
     }
