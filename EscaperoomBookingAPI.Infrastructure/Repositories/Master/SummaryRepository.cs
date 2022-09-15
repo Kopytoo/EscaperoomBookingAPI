@@ -2,6 +2,7 @@ using EscaperoomBookingAPI.Core.Application.Repositories.Interfaces.Common;
 using EscaperoomBookingAPI.Core.Application.Repositories.Interfaces.Master;
 using EscaperoomBookingAPI.Core.Domain.Dtos;
 using EscaperoomBookingAPI.Core.Domain.Entities.Master;
+using EscaperoomBookingAPI.Core.Domain.Enums;
 using EscaperoomBookingAPI.Infrastructure.Persistence.Context;
 using EscaperoomBookingAPI.Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,22 @@ public class SummaryRepository : GenericRepository<Summary, Guid>, ISummaryRepos
     {
     }
 
+    public override async Task<IEnumerable<Summary>> GetAllAsync()
+    {
+        return await _dbSet
+            .Include(s => s.BookingDetails)
+            .Include(s => s.CustomerDetails)
+            .ToListAsync();
+    }
+    
+    public override async Task<Summary> GetByIdAsync(Guid id)
+    {
+        return await _dbSet
+            .Include(s => s.BookingDetails)
+            .Include(s => s.CustomerDetails)
+            .FirstOrDefaultAsync(s => s.Id == id);
+    }
+
     public async Task<IEnumerable<SummaryDto>> GetAllSummariesAsync()
     {
         var summaries = await GetAllAsync();
@@ -24,7 +41,24 @@ public class SummaryRepository : GenericRepository<Summary, Guid>, ISummaryRepos
             Id = b.Id,
             Status = b.Status,
             CreationDate = b.CreationDate,
-            Price = b.Price
+            Price = b.Price,
+            BookingDetails = b.BookingDetails == null
+                ? null
+                : new BookingDetailsDto
+                {
+                    SelectedRoom = b.BookingDetails.SelectedRoom,
+                    VisitDate = b.BookingDetails.VisitDate,
+                    NumberOfPeople = b.BookingDetails.NumberOfPeople,
+                },
+            CustomerDetails = b.CustomerDetails == null
+            ? null
+            : new CustomerDetailsDto
+            {
+                Name = b.CustomerDetails.Name,
+                Email = b.CustomerDetails.Email,
+                PhoneNumber = b.CustomerDetails.PhoneNumber,
+                OtherInfo = b.CustomerDetails.OtherInfo
+            }
         });
         return summaryDtos;
     }
@@ -41,11 +75,20 @@ public class SummaryRepository : GenericRepository<Summary, Guid>, ISummaryRepos
             Price = summary.Price,
             BookingDetails = summary.BookingDetails == null
                 ? null
-                : new BookingDetailsDto()
+                : new BookingDetailsDto
                 {
                     SelectedRoom = summary.BookingDetails.SelectedRoom,
                     VisitDate = summary.BookingDetails.VisitDate,
-                    NumberOfPeople = summary.BookingDetails.NumberOfPeople
+                    NumberOfPeople = summary.BookingDetails.NumberOfPeople,
+                },
+            CustomerDetails = summary.CustomerDetails == null
+                ? null
+                : new CustomerDetailsDto
+                {
+                    Name = summary.CustomerDetails.Name,
+                    Email = summary.CustomerDetails.Email,
+                    PhoneNumber = summary.CustomerDetails.PhoneNumber,
+                    OtherInfo = summary.CustomerDetails.OtherInfo
                 }
         };
         return summaryDto;
@@ -56,9 +99,9 @@ public class SummaryRepository : GenericRepository<Summary, Guid>, ISummaryRepos
         var newSummary = new Summary()
         {
             Id = Guid.NewGuid(),
-            Status = 0,
+            Status = BookingStatus.Pending,
             CreationDate = DateTime.Now,
-            BookingVariant = 0,
+            BookingVariant = Variant.Default,
             Price = 0,
             BookingDetails = null,
             CustomerDetails = null
@@ -69,7 +112,6 @@ public class SummaryRepository : GenericRepository<Summary, Guid>, ISummaryRepos
         return newSummary;
     }
 
-    // TODO - Update nie działa
     public async Task<Summary> UpdateSummaryAsync(Guid summaryId, Guid bookingDetailsId, Guid customerDetailsId)
     {
         var existingSummary = await _dbSet.Where(x => x.Id == summaryId).FirstOrDefaultAsync();
@@ -81,11 +123,27 @@ public class SummaryRepository : GenericRepository<Summary, Guid>, ISummaryRepos
             return null;
 
         if (bookingDetails != null)
+        {
             existingSummary.BookingDetails = bookingDetails;
+            existingSummary.BookingVariant =
+                bookingDetails.VisitDate.DayOfWeek is DayOfWeek.Friday or DayOfWeek.Saturday or DayOfWeek.Sunday
+                    ? Variant.Weekend
+                    : Variant.Weekday;
+            existingSummary.Price = existingSummary.BookingVariant is Variant.Weekend ? 200 : 170;
+        }
 
         if (customerDetails != null)
             existingSummary.CustomerDetails = customerDetails;
 
         return existingSummary;
+    }
+
+    public async Task<Summary> UpdateSummaryStatusAsync(Guid summaryId, BookingStatus status)
+    {
+        var summary = await _dbSet.Where(x => x.Id == summaryId).FirstOrDefaultAsync();
+
+        summary.Status = status;
+
+        return summary;
     }
 }

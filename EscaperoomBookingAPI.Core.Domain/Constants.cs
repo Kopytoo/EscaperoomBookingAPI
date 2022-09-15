@@ -19,6 +19,7 @@ public static class Constants
     
     public static class Variant
     {
+        public const string Default = "Default";
         public const string Weekday = "Weekday";
         public const string Weekend = "Weekend";
     }

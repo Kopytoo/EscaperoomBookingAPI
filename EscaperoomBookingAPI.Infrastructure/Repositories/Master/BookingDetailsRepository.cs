@@ -16,7 +16,7 @@ public class BookingDetailsRepository : GenericRepository<BookingDetails, Guid>,
     public BookingDetailsRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {
     }
-    
+
     public async Task<IEnumerable<BookingDetailsDto>> GetAllBookingDetailsAsync()
     {
         var bookingDetails = await GetAllAsync();
@@ -67,10 +67,8 @@ public class BookingDetailsRepository : GenericRepository<BookingDetails, Guid>,
             VisitDate = visitDate,
             NumberOfPeople = numberOfPeople,
             Summary = summary,
-            SummaryReference = summaryId
+            SummaryReference = summary.Id
         };
-
-        summary.BookingDetails = newBookingDetails;
 
         await AddAsync(newBookingDetails);
 

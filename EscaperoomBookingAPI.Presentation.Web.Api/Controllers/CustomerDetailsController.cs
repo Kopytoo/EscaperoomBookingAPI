@@ -1,19 +1,17 @@
 using EscaperoomBookingAPI.Core.Application.UoW.Interface;
 using EscaperoomBookingAPI.Core.Domain.Dtos;
-using EscaperoomBookingAPI.Core.Domain.Entities.Master;
-using EscaperoomBookingAPI.Core.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscaperoomBookingAPI.Presentation.Web.Api.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BookingDetailsController : Controller
+public class CustomerDetailsController : Controller
 {
     private readonly ILogger<BookingDetailsController> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
-    public BookingDetailsController(ILogger<BookingDetailsController> logger, IUnitOfWork unitOfWork)
+    public CustomerDetailsController(ILogger<BookingDetailsController> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -25,12 +23,12 @@ public class BookingDetailsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
-        var bookingDetailsDtos = await _unitOfWork.BookingsDetails.GetAllBookingDetailsAsync();
+        var customerDetailsDtos = await _unitOfWork.CustomersDetails.GetAllCustomerDetailsAsync();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        return Ok(bookingDetailsDtos);
+        return Ok(customerDetailsDtos);
     }
     
     [HttpGet("{id}")]
@@ -39,12 +37,12 @@ public class BookingDetailsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var bookingDetailsDto = await _unitOfWork.BookingsDetails.GetBookingDetailsByIdAsync(id);
+        var customerDetailsDto = await _unitOfWork.CustomersDetails.GetCustomerDetailsByIdAsync(id);
         
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        return Ok(bookingDetailsDto);
+        return Ok(customerDetailsDto);
     }
     
     [HttpGet]
@@ -53,28 +51,28 @@ public class BookingDetailsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetBySummaryId(Guid id)
     {
-        var bookingDetailsDto = await _unitOfWork.BookingsDetails.GetBookingDetailsBySummaryIdAsync(id);
+        var customerDetailsDto = await _unitOfWork.CustomersDetails.GetCustomerDetailsBySummaryIdAsync(id);
         
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        return Ok(bookingDetailsDto);
+        return Ok(customerDetailsDto);
     }
     
     [HttpPost]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create(Guid summaryId, Room selectedRoom, DateTime visitDate, int numberOfPeople)
+    public async Task<IActionResult> Create(Guid summaryId, string name, string email, int phoneNumber, string? otherInfo)
     {
         if (ModelState.IsValid)
         {
-            var newBookingDetails = await _unitOfWork.BookingsDetails.CreateBookingDetailsAsync(summaryId, selectedRoom, visitDate, numberOfPeople);
+            var newCustomerDetails = await _unitOfWork.CustomersDetails.CreateCustomerDetailsAsync(summaryId, name, email, phoneNumber, otherInfo);
             await _unitOfWork.SaveChangesAsync();
-            await _unitOfWork.Summaries.UpdateSummaryAsync(summaryId, newBookingDetails.Id, Guid.Empty);
+            await _unitOfWork.Summaries.UpdateSummaryAsync(summaryId, Guid.Empty, newCustomerDetails.Id);
             await _unitOfWork.SaveChangesAsync();  
             
-            return CreatedAtAction("GetById", new { newBookingDetails.Id }, newBookingDetails);
+            return CreatedAtAction("GetById", new { newCustomerDetails.Id }, newCustomerDetails);
         }
 
         return new JsonResult("Something Went Wrong") { StatusCode = 500 };
