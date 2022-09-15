@@ -40,7 +40,7 @@ namespace EscaperoomBookingAPI.Infrastructure.Migrations
                     b.HasIndex("SummaryReference")
                         .IsUnique();
 
-                    b.ToTable("BookingDetails");
+                    b.ToTable("BookingDetails", (string)null);
                 });
 
             modelBuilder.Entity("EscaperoomBookingAPI.Core.Domain.Entities.Master.CustomerDetails", b =>
@@ -71,7 +71,7 @@ namespace EscaperoomBookingAPI.Infrastructure.Migrations
                     b.HasIndex("SummaryReference")
                         .IsUnique();
 
-                    b.ToTable("CustomerDetails");
+                    b.ToTable("CustomerDetails", (string)null);
                 });
 
             modelBuilder.Entity("EscaperoomBookingAPI.Core.Domain.Entities.Master.Summary", b =>
@@ -94,7 +94,7 @@ namespace EscaperoomBookingAPI.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Summary");
+                    b.ToTable("Summary", (string)null);
                 });
 
             modelBuilder.Entity("EscaperoomBookingAPI.Core.Domain.Entities.Master.BookingDetails", b =>
