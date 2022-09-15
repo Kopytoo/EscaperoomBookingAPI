@@ -23,7 +23,7 @@ public class SummaryRepository : GenericRepository<Summary, Guid>, ISummaryRepos
             .Include(s => s.CustomerDetails)
             .ToListAsync();
     }
-    
+
     public override async Task<Summary> GetByIdAsync(Guid id)
     {
         return await _dbSet
@@ -51,14 +51,49 @@ public class SummaryRepository : GenericRepository<Summary, Guid>, ISummaryRepos
                     NumberOfPeople = b.BookingDetails.NumberOfPeople,
                 },
             CustomerDetails = b.CustomerDetails == null
-            ? null
-            : new CustomerDetailsDto
-            {
-                Name = b.CustomerDetails.Name,
-                Email = b.CustomerDetails.Email,
-                PhoneNumber = b.CustomerDetails.PhoneNumber,
-                OtherInfo = b.CustomerDetails.OtherInfo
-            }
+                ? null
+                : new CustomerDetailsDto
+                {
+                    Name = b.CustomerDetails.Name,
+                    Email = b.CustomerDetails.Email,
+                    PhoneNumber = b.CustomerDetails.PhoneNumber,
+                    OtherInfo = b.CustomerDetails.OtherInfo
+                }
+        });
+        return summaryDtos;
+    }
+
+    public async Task<IEnumerable<SummaryDto>> GetSummariesByRoomAsync(Room room)
+    {
+        var summaries = await _dbSet
+            .Include(s => s.BookingDetails)
+            .Include(s => s.CustomerDetails)
+            .Where(s => s.BookingDetails.SelectedRoom == room)
+            .ToListAsync();
+
+        var summaryDtos = summaries.Select(b => new SummaryDto()
+        {
+            Id = b.Id,
+            Status = b.Status,
+            CreationDate = b.CreationDate,
+            Price = b.Price,
+            BookingDetails = b.BookingDetails == null
+                ? null
+                : new BookingDetailsDto
+                {
+                    SelectedRoom = b.BookingDetails.SelectedRoom,
+                    VisitDate = b.BookingDetails.VisitDate,
+                    NumberOfPeople = b.BookingDetails.NumberOfPeople,
+                },
+            CustomerDetails = b.CustomerDetails == null
+                ? null
+                : new CustomerDetailsDto
+                {
+                    Name = b.CustomerDetails.Name,
+                    Email = b.CustomerDetails.Email,
+                    PhoneNumber = b.CustomerDetails.PhoneNumber,
+                    OtherInfo = b.CustomerDetails.OtherInfo
+                }
         });
         return summaryDtos;
     }

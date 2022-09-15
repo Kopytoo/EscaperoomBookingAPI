@@ -33,11 +33,15 @@ public class CustomerDetailsController : Controller
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var customerDetailsDto = await _unitOfWork.CustomersDetails.GetCustomerDetailsByIdAsync(id);
+
+        if (customerDetailsDto == null)
+            return NotFound();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -47,11 +51,15 @@ public class CustomerDetailsController : Controller
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetBySummaryId([FromRoute] Guid id)
     {
         var customerDetailsDto = await _unitOfWork.CustomersDetails.GetCustomerDetailsBySummaryIdAsync(id);
+
+        if (customerDetailsDto == null)
+            return NotFound();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -61,21 +69,23 @@ public class CustomerDetailsController : Controller
 
     [HttpPost]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromForm] Guid summaryId, [FromForm] CustomerDetailsDto customerDetails)
     {
-        if (ModelState.IsValid)
-        {
-            var newCustomerDetails = await _unitOfWork.CustomersDetails.CreateCustomerDetailsAsync(summaryId,
-                customerDetails.Name, customerDetails.Email, customerDetails.PhoneNumber, customerDetails.OtherInfo);
-            await _unitOfWork.SaveChangesAsync();
-            await _unitOfWork.Summaries.UpdateSummaryAsync(summaryId, Guid.Empty, newCustomerDetails.Id);
-            await _unitOfWork.SaveChangesAsync();
+        if (_unitOfWork.Summaries.GetByIdAsync(summaryId) == null)
+            return NotFound();
 
-            return CreatedAtAction("GetById", new { newCustomerDetails.Id }, newCustomerDetails);
-        }
+        if (!ModelState.IsValid)
+            return BadRequest();
 
-        return new JsonResult("Something Went Wrong") { StatusCode = 500 };
+        var newCustomerDetails = await _unitOfWork.CustomersDetails.CreateCustomerDetailsAsync(summaryId,
+            customerDetails.Name, customerDetails.Email, customerDetails.PhoneNumber, customerDetails.OtherInfo);
+        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.Summaries.UpdateSummaryAsync(summaryId, Guid.Empty, newCustomerDetails.Id);
+        await _unitOfWork.SaveChangesAsync();
+
+        return CreatedAtAction("GetById", new { newCustomerDetails.Id }, newCustomerDetails);
     }
 }

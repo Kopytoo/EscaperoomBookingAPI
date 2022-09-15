@@ -35,11 +35,15 @@ public class BookingDetailsController : Controller
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var bookingDetailsDto = await _unitOfWork.BookingsDetails.GetBookingDetailsByIdAsync(id);
+
+        if (bookingDetailsDto == null)
+            return NotFound();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -49,11 +53,15 @@ public class BookingDetailsController : Controller
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetBySummaryId([FromRoute] Guid id)
     {
         var bookingDetailsDto = await _unitOfWork.BookingsDetails.GetBookingDetailsBySummaryIdAsync(id);
+        
+        if (bookingDetailsDto == null)
+            return NotFound();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -63,21 +71,23 @@ public class BookingDetailsController : Controller
 
     [HttpPost]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromForm] Guid summaryId, [FromForm] BookingDetailsDto bookingDetails)
     {
+        if (_unitOfWork.Summaries.GetByIdAsync(summaryId) == null)
+            return NotFound();
+        
         if (ModelState.IsValid)
-        {
-            var newBookingDetails = await _unitOfWork.BookingsDetails.CreateBookingDetailsAsync(summaryId,
-                bookingDetails.SelectedRoom, bookingDetails.VisitDate, bookingDetails.NumberOfPeople);
-            await _unitOfWork.SaveChangesAsync();
-            await _unitOfWork.Summaries.UpdateSummaryAsync(summaryId, newBookingDetails.Id, Guid.Empty);
-            await _unitOfWork.SaveChangesAsync();
+            return BadRequest();
+        
+        var newBookingDetails = await _unitOfWork.BookingsDetails.CreateBookingDetailsAsync(summaryId,
+            bookingDetails.SelectedRoom, bookingDetails.VisitDate, bookingDetails.NumberOfPeople);
+        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.Summaries.UpdateSummaryAsync(summaryId, newBookingDetails.Id, Guid.Empty);
+        await _unitOfWork.SaveChangesAsync();
 
-            return CreatedAtAction("GetById", new { newBookingDetails.Id }, newBookingDetails);
-        }
-
-        return new JsonResult("Something Went Wrong") { StatusCode = 500 };
+        return CreatedAtAction("GetById", new { newBookingDetails.Id }, newBookingDetails);
     }
 }
