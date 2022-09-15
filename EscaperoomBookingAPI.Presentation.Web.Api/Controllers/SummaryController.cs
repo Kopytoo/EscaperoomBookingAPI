@@ -64,11 +64,11 @@ public class SummaryController : Controller
         return new JsonResult("Something Went Wrong") { StatusCode = 500 };
     }
 
-    [HttpPatch("{id}")]
+    [HttpPatch]
     [ProducesResponseType(typeof(SummaryDto), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateStatus([FromRoute] Guid summaryId, [FromForm] BookingStatus status)
+    public async Task<IActionResult> UpdateStatus([FromForm] Guid summaryId, [FromForm] BookingStatus status)
     {
         if (ModelState.IsValid)
         {
