@@ -12,13 +12,13 @@ public class SummaryController : Controller
 {
     private readonly ILogger<SummaryController> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    
+
     public SummaryController(ILogger<SummaryController> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
-    
+
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<SummaryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -32,21 +32,21 @@ public class SummaryController : Controller
 
         return Ok(summaryDtos);
     }
-    
+
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(SummaryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var summaryDto = await _unitOfWork.Summaries.GetSummaryByIdAsync(id);
-        
+
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         return Ok(summaryDto);
     }
-    
+
     [HttpPost]
     [ProducesResponseType(typeof(SummaryDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,12 +63,12 @@ public class SummaryController : Controller
 
         return new JsonResult("Something Went Wrong") { StatusCode = 500 };
     }
-    
-    [HttpPatch]
+
+    [HttpPatch("{id}")]
     [ProducesResponseType(typeof(SummaryDto), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateStatus(Guid summaryId, BookingStatus status)
+    public async Task<IActionResult> UpdateStatus([FromRoute] Guid summaryId, [FromForm] BookingStatus status)
     {
         if (ModelState.IsValid)
         {

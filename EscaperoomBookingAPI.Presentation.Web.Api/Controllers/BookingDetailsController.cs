@@ -18,7 +18,7 @@ public class BookingDetailsController : Controller
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
-    
+
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<BookingDetailsDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -32,48 +32,49 @@ public class BookingDetailsController : Controller
 
         return Ok(bookingDetailsDtos);
     }
-    
+
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var bookingDetailsDto = await _unitOfWork.BookingsDetails.GetBookingDetailsByIdAsync(id);
-        
+
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         return Ok(bookingDetailsDto);
     }
-    
-    [HttpGet]
+
+    [HttpGet("{id}")]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetBySummaryId(Guid id)
+    public async Task<IActionResult> GetBySummaryId([FromRoute] Guid id)
     {
         var bookingDetailsDto = await _unitOfWork.BookingsDetails.GetBookingDetailsBySummaryIdAsync(id);
-        
+
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         return Ok(bookingDetailsDto);
     }
-    
+
     [HttpPost]
     [ProducesResponseType(typeof(BookingDetailsDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create(Guid summaryId, Room selectedRoom, DateTime visitDate, int numberOfPeople)
+    public async Task<IActionResult> Create([FromForm] Guid summaryId, [FromForm] BookingDetailsDto bookingDetails)
     {
         if (ModelState.IsValid)
         {
-            var newBookingDetails = await _unitOfWork.BookingsDetails.CreateBookingDetailsAsync(summaryId, selectedRoom, visitDate, numberOfPeople);
+            var newBookingDetails = await _unitOfWork.BookingsDetails.CreateBookingDetailsAsync(summaryId,
+                bookingDetails.SelectedRoom, bookingDetails.VisitDate, bookingDetails.NumberOfPeople);
             await _unitOfWork.SaveChangesAsync();
             await _unitOfWork.Summaries.UpdateSummaryAsync(summaryId, newBookingDetails.Id, Guid.Empty);
-            await _unitOfWork.SaveChangesAsync();  
-            
+            await _unitOfWork.SaveChangesAsync();
+
             return CreatedAtAction("GetById", new { newBookingDetails.Id }, newBookingDetails);
         }
 
