@@ -82,7 +82,7 @@ public class BookingDetailsController : Controller
         if (_summaryService.GetSummaryByIdAsync(summaryId) == null)
             return NotFound();
         
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest();
         
         var newBookingDetails = await _bookingDetailsService.CreateBookingDetailsAsync(summaryId, bookingDetails);
