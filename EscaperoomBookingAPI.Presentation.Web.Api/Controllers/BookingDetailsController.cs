@@ -2,6 +2,7 @@ using EscaperoomBookingAPI.Core.Application.UoW.Interface;
 using EscaperoomBookingAPI.Core.Domain.Dtos;
 using EscaperoomBookingAPI.Core.Domain.Entities.Master;
 using EscaperoomBookingAPI.Core.Domain.Enums;
+using EscaperoomBookingAPI.Core.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscaperoomBookingAPI.Presentation.Web.Api.Controllers;
@@ -10,13 +11,15 @@ namespace EscaperoomBookingAPI.Presentation.Web.Api.Controllers;
 [ApiController]
 public class BookingDetailsController : Controller
 {
-    private readonly ILogger<BookingDetailsController> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<SummaryController> _logger;
+    private readonly ISummaryService _summaryService;
+    private readonly IBookingDetailsService _bookingDetailsService;
 
-    public BookingDetailsController(ILogger<BookingDetailsController> logger, IUnitOfWork unitOfWork)
+    public BookingDetailsController(ILogger<SummaryController> logger, ISummaryService summaryService, IBookingDetailsService bookingDetailsService)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _summaryService = summaryService;
+        _bookingDetailsService = bookingDetailsService;
     }
 
     [HttpGet]
@@ -25,7 +28,7 @@ public class BookingDetailsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
-        var bookingDetailsDtos = await _unitOfWork.BookingsDetails.GetAllBookingDetailsAsync();
+        var bookingDetailsDtos = await _bookingDetailsService.GetAllBookingDetailsAsync();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -40,7 +43,7 @@ public class BookingDetailsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
-        var bookingDetailsDto = await _unitOfWork.BookingsDetails.GetBookingDetailsByIdAsync(id);
+        var bookingDetailsDto = await _bookingDetailsService.GetBookingDetailsByIdAsync(id);
 
         if (bookingDetailsDto == null)
             return NotFound();
@@ -58,7 +61,7 @@ public class BookingDetailsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetBySummaryId([FromRoute] Guid id)
     {
-        var bookingDetailsDto = await _unitOfWork.BookingsDetails.GetBookingDetailsBySummaryIdAsync(id);
+        var bookingDetailsDto = await _bookingDetailsService.GetBookingDetailsBySummaryIdAsync(id);
         
         if (bookingDetailsDto == null)
             return NotFound();
@@ -76,17 +79,14 @@ public class BookingDetailsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromForm] Guid summaryId, [FromForm] BookingDetailsDto bookingDetails)
     {
-        if (_unitOfWork.Summaries.GetByIdAsync(summaryId) == null)
+        if (_summaryService.GetSummaryByIdAsync(summaryId) == null)
             return NotFound();
         
         if (ModelState.IsValid)
             return BadRequest();
         
-        var newBookingDetails = await _unitOfWork.BookingsDetails.CreateBookingDetailsAsync(summaryId,
-            bookingDetails.SelectedRoom, bookingDetails.VisitDate, bookingDetails.NumberOfPeople);
-        await _unitOfWork.SaveChangesAsync();
-        await _unitOfWork.Summaries.UpdateSummaryAsync(summaryId, newBookingDetails.Id, Guid.Empty);
-        await _unitOfWork.SaveChangesAsync();
+        var newBookingDetails = await _bookingDetailsService.CreateBookingDetailsAsync(summaryId, bookingDetails);
+        await _summaryService.UpdateSummaryAsync(summaryId, newBookingDetails.Id, Guid.Empty);
 
         return CreatedAtAction("GetById", new { newBookingDetails.Id }, newBookingDetails);
     }

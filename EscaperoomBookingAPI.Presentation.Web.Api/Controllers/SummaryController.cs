@@ -2,6 +2,7 @@ using EscaperoomBookingAPI.Core.Application.UoW.Interface;
 using EscaperoomBookingAPI.Core.Domain.Dtos;
 using EscaperoomBookingAPI.Core.Domain.Entities.Master;
 using EscaperoomBookingAPI.Core.Domain.Enums;
+using EscaperoomBookingAPI.Core.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscaperoomBookingAPI.Presentation.Web.Api.Controllers;
@@ -11,12 +12,12 @@ namespace EscaperoomBookingAPI.Presentation.Web.Api.Controllers;
 public class SummaryController : Controller
 {
     private readonly ILogger<SummaryController> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ISummaryService _summaryService;
 
-    public SummaryController(ILogger<SummaryController> logger, IUnitOfWork unitOfWork)
+    public SummaryController(ILogger<SummaryController> logger, ISummaryService summaryService)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _summaryService = summaryService;
     }
 
     [HttpGet]
@@ -25,7 +26,7 @@ public class SummaryController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
-        var summaryDtos = await _unitOfWork.Summaries.GetAllSummariesAsync();
+        var summaryDtos = await _summaryService.GetAllSummariesAsync();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -39,7 +40,7 @@ public class SummaryController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetByRoom([FromRoute] Room room)
     {
-        var summaryDtos = await _unitOfWork.Summaries.GetSummariesByRoomAsync(room);
+        var summaryDtos = await _summaryService.GetSummariesByRoomAsync(room);
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -54,7 +55,7 @@ public class SummaryController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
-        var summaryDto = await _unitOfWork.Summaries.GetSummaryByIdAsync(id);
+        var summaryDto = await _summaryService.GetSummaryByIdAsync(id);
 
         if (summaryDto == null)
             return NotFound();
@@ -74,8 +75,7 @@ public class SummaryController : Controller
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var newSummary = await _unitOfWork.Summaries.CreateSummaryAsync();
-        await _unitOfWork.SaveChangesAsync();
+        var newSummary = await _summaryService.CreateSummaryAsync();
 
         return CreatedAtAction("GetById", new { newSummary.Id }, newSummary);
     }
@@ -87,14 +87,13 @@ public class SummaryController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateStatus([FromForm] Guid summaryId, [FromForm] BookingStatus status)
     {
-        if (_unitOfWork.Summaries.GetByIdAsync(summaryId) == null)
+        if (_summaryService.GetSummaryByIdAsync(summaryId) == null)
             return NotFound();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         
-        await _unitOfWork.Summaries.UpdateSummaryStatusAsync(summaryId, status);
-        await _unitOfWork.SaveChangesAsync();
+        await _summaryService.UpdateSummaryStatusAsync(summaryId, status);
 
         return NoContent();
     }

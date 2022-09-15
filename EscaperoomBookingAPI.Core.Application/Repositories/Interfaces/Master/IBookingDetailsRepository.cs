@@ -7,8 +7,5 @@ namespace EscaperoomBookingAPI.Core.Application.Repositories.Interfaces.Master;
 
 public interface IBookingDetailsRepository : IGenericRepository<BookingDetails, Guid>
 {
-    Task<IEnumerable<BookingDetailsDto>> GetAllBookingDetailsAsync();
-    Task<BookingDetailsDto> GetBookingDetailsByIdAsync(Guid id);
-    Task<BookingDetailsDto> GetBookingDetailsBySummaryIdAsync(Guid id);
-    Task<BookingDetails> CreateBookingDetailsAsync(Guid summaryId, Room selectedRoom, DateTime visitDate, int numberOfPeople);
+    Task<BookingDetails> GetBySummaryIdAsync(Guid id);
 }
